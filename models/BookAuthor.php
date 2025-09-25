@@ -1,0 +1,56 @@
+<?php
+
+namespace app\models;
+
+use yii\db\ActiveRecord;
+use yii\behaviors\TimestampBehavior;
+use yii\db\Expression;
+
+class BookAuthor extends ActiveRecord
+{
+    public static function tableName()
+    {
+        return '{{%book_authors}}';
+    }
+
+    public function behaviors()
+    {
+        return [
+            [
+                'class' => TimestampBehavior::class,
+                'createdAtAttribute' => 'created_at',
+                'updatedAtAttribute' => false,
+                'value' => new Expression('NOW()'),
+            ],
+        ];
+    }
+
+    public function rules()
+    {
+        return [
+            [['book_id', 'author_id'], 'required'],
+            [['book_id', 'author_id'], 'integer'],
+            [['book_id', 'author_id'], 'unique', 'targetAttribute' => ['book_id', 'author_id']],
+        ];
+    }
+
+    public function attributeLabels()
+    {
+        return [
+            'id' => 'ID',
+            'book_id' => 'Книга',
+            'author_id' => 'Автор',
+            'created_at' => 'Создано',
+        ];
+    }
+
+    public function getBook()
+    {
+        return $this->hasOne(Book::class, ['id' => 'book_id']);
+    }
+
+    public function getAuthor()
+    {
+        return $this->hasOne(Author::class, ['id' => 'author_id']);
+    }
+}
